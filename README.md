@@ -1,3 +1,3 @@
 # pawpal
 
-A new Flutter project.
+Flutter project for lab assignment.
