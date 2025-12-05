@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pawpal/my_config.dart';
-import 'package:pawpal/screens/home_page.dart';
+import 'package:pawpal/screens/MainScreen.dart';
 import 'package:pawpal/models/user.dart';
-import 'package:pawpal/screens/register_page.dart';
+import 'package:pawpal/screens/RegisterScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
