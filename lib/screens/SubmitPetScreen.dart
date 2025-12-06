@@ -15,40 +15,32 @@ class SubmitPetScreen extends StatefulWidget {
   const SubmitPetScreen({super.key, required this.user});
 
   @override
-  State<SubmitPetScreen> createState() => _MyServicePageState();
+  State<SubmitPetScreen> createState() => _SubmitPetScreenState();
 }
 
-class _MyServicePageState extends State<SubmitPetScreen> {
-  List<String> myservices = [
-    'Cleaning',
-    'Plumbing',
-    'Electrical',
-    'Painting',
-    'Car Service',
-    'Gardening',
-    'Handyman',
-    'Installation',
-    'Maid Service',
+class _SubmitPetScreenState extends State<SubmitPetScreen> {
+  List<String> petTypes = [
+    'Cat',
+    'Dog',
+    'Bird',
+    'Fish',
+    'Reptile',
+    'Small Mammal', // hamster or rabbit
+    'Exotic Pet',
+    'Amphibian',
+    'Farm Animal', // goat, cow, chicken
     'Other',
   ];
 
-  List<String> kdhdistricts = [
-    'Kubang Pasu',
-    'Bukit Kayu Hitam',
-    'Baling',
-    'Bandar Baru',
-    'Kota Setar',
-    'Kuala Muda',
-    'Padang Terap',
-    'Pokok Sena',
-    'Yan',
-    'Sik',
+  List<String> submissionCategory = [
+    'Adoption',
+    'Donation Request',
+    'Help/Rescue',
   ];
-  TextEditingController titleController = TextEditingController();
+  TextEditingController petnameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  TextEditingController hourlyrateController = TextEditingController();
-  String selectedservice = 'Cleaning';
-  String selecteddistrict = 'Kubang Pasu';
+  String selectedPetTypes = 'Cat';
+  String selectedSubmission = 'Adoption';
   File? image;
   Uint8List? webImage; // for web
   late double height, width;
@@ -63,7 +55,7 @@ class _MyServicePageState extends State<SubmitPetScreen> {
       width = width;
     }
     return Scaffold(
-      appBar: AppBar(title: Text('My Service Page')),
+      appBar: AppBar(title: Text('Submit a Pet')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -117,7 +109,7 @@ class _MyServicePageState extends State<SubmitPetScreen> {
                                   size: 80,
                                   color: Colors.grey,
                                 ),
-                                SizedBox(height: 10),
+                                SizedBox(height: 16),
                                 Text(
                                   "Tap to add image",
                                   style: TextStyle(
@@ -130,23 +122,23 @@ class _MyServicePageState extends State<SubmitPetScreen> {
                           : null,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   TextField(
-                    controller: titleController,
+                    controller: petnameController,
                     decoration: InputDecoration(
                       labelText: 'Title',
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
-                      labelText: 'Select Services',
+                      labelText: 'Select Pet Types',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    items: myservices.map((String selectserv) {
+                    items: petTypes.map((String selectserv) {
                       return DropdownMenuItem<String>(
                         value: selectserv,
                         child: Text(selectserv),
@@ -154,13 +146,13 @@ class _MyServicePageState extends State<SubmitPetScreen> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        selectedservice = newValue!;
-                        print(selectedservice);
+                        selectedPetTypes = newValue!;
+                        print(selectedPetTypes);
                       });
                     },
                   ),
 
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: 'Select Location',
@@ -168,7 +160,7 @@ class _MyServicePageState extends State<SubmitPetScreen> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    items: kdhdistricts.map((String location) {
+                    items: submissionCategory.map((String location) {
                       return DropdownMenuItem<String>(
                         value: location,
                         child: Text(location),
@@ -176,32 +168,23 @@ class _MyServicePageState extends State<SubmitPetScreen> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        selecteddistrict = newValue!;
+                        selectedSubmission = newValue!;
                       });
                     },
                   ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: hourlyrateController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Hourly Rate',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   TextField(
                     controller: descriptionController,
                     decoration: InputDecoration(
                       labelText: 'Description',
                       border: OutlineInputBorder(),
                     ),
-                    maxLines: 3,
+                    maxLines: 2,
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey,
+                      backgroundColor: Colors.deepOrangeAccent,
                       minimumSize: Size(width, 50),
 
                       shape: RoundedRectangleBorder(
@@ -287,10 +270,10 @@ class _MyServicePageState extends State<SubmitPetScreen> {
 
   void showSubmitDialog() {
     // Title validation
-    if (titleController.text.trim().isEmpty) {
+    if (petnameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Please enter title"),
+          content: Text("Please enter pet name"),
           backgroundColor: Colors.red,
         ),
       );
@@ -318,17 +301,6 @@ class _MyServicePageState extends State<SubmitPetScreen> {
       return;
     }
 
-    // Hourly rate
-    if (hourlyrateController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please enter hourly rate"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     // Description
     if (descriptionController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -345,8 +317,8 @@ class _MyServicePageState extends State<SubmitPetScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Submit Service'),
-          content: const Text('Are you sure you want to submit this service?'),
+          title: const Text('Submit Pet'),
+          content: const Text('Are you sure you want to submit?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -355,7 +327,7 @@ class _MyServicePageState extends State<SubmitPetScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                submitService();
+                submitPet();
               },
               child: const Text('Submit'),
             ),
@@ -365,26 +337,24 @@ class _MyServicePageState extends State<SubmitPetScreen> {
     );
   }
 
-  void submitService() {
+  void submitPet() {
     String base64image = "";
     if (kIsWeb) {
       base64image = base64Encode(webImage!);
     } else {
       base64image = base64Encode(image!.readAsBytesSync());
     }
-    String title = titleController.text.trim();
+    String petName = petnameController.text.trim();
     String description = descriptionController.text.trim();
-    String hourlyrate = hourlyrateController.text.trim();
 
     http
         .post(
-          Uri.parse('${MyConfig.baseUrl}/pawpal/api/insertservice.php'),
+          Uri.parse('${MyConfig.baseUrl}/pawpal/api/submit_pet.php'),
           body: {
-            'userid': widget.user?.userId,
-            'title': title,
-            'service': selectedservice,
-            'district': selecteddistrict,
-            'hourlyrate': hourlyrate,
+            'user_id': widget.user?.userId,
+            'pet_name': petName,
+            'pet_type': selectedPetTypes,
+            'category': selectedSubmission,
             'description': description,
             'image': base64image,
           },
@@ -397,7 +367,7 @@ class _MyServicePageState extends State<SubmitPetScreen> {
             if (resarray['status'] == 'success') {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text("Service submitted successfully"),
+                  content: Text("Pet submitted successfully"),
                   backgroundColor: Colors.green,
                 ),
               );

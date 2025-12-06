@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:pawpal/MyConfig.dart';
 import 'package:pawpal/models/pet.dart';
 import 'package:pawpal/models/user.dart';
+import 'package:pawpal/screens/SubmitPetScreen.dart';
 
 class MainScreen extends StatefulWidget {
   final User? user;
@@ -70,6 +71,19 @@ class _MainScreenState extends State<MainScreen> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : buildContent(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to home page
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubmitPetScreen(user: widget.user),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 

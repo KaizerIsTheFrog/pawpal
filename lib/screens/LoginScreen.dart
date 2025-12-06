@@ -229,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: Colors.green,
                 ),
               );
-              // Navigate to home page or dashboard
+              // Navigate to home page
               Navigator.pop(context);
               Navigator.push(
                 context,
