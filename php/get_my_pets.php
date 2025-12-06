@@ -12,7 +12,6 @@ $conn = new mysqli($servername, $username, $password, $dbname, $port);
 
 // Check conn
 if ($conn->connect_error) {
-    // die() sends plain text output and terminates
     die("Connection failed: " . $conn->connect_error);
 }
 
