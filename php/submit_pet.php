@@ -1,24 +1,13 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 
-// connection variables
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "pawpal_db";
-$port = 3307;
-
-$conn = new mysqli($servername, $username, $password, $dbname, $port);
-
-// conn
-if ($conn->connect_error){
-    sendJsonResponse(array("status"=>"failed", "message"=>"Database connection failed"));
-}
+include 'dbconnect.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(405);
     sendJsonResponse(array('status' => 'failed', 'message' => 'Method Not Allowed'));
+    exit();
 }
 
 // retrieve post
@@ -27,8 +16,9 @@ $petname = addslashes($_POST['pet_name'] ?? '');
 $pettype = $_POST['pet_type'] ?? '';
 $category = $_POST['category'] ?? '';
 $description = addslashes($_POST['description'] ?? '');
-$lat = $_POST['lat'] ?? '';
-$lng = $_POST['lng'] ?? '';
+$lat = $_POST['lat'] ?? ''; 
+$lng = $_POST['lng'] ?? ''; 
+$encodedimage = base64_decode($_POST['image']);
 
 
 // check empty
@@ -40,7 +30,24 @@ $sqlinsertpet = "
     INSERT INTO `tbl_pets`
     (`user_id`, `pet_name`, `pet_type`, `category`, `description`, `lat`, `lng`, `image_paths`) 
     VALUES 
-    ('$userid','$petname','$pettype','$category','$description','$lat','$lng','')
+    ('$userid','$petname','$pettype','$category','$description','$lat','$lng','$encodedimage')
 ";
 
+try {
+    if ($conn->query($sqlinsertpet) === TRUE) {
+        $current_pet_id = $conn->insert_id;
+        $path = "../assets/pets/pet_".$last_id.".png";
+        file_put_contents($path, $encodedimage); 
+        
+        $response = array('status' => 'success', 'message' => 'Service added successfully');
+        sendJsonResponse($response);
+
+    } else {
+        $response = array('status' => 'failed', 'message' => 'Pet submission failed');
+        sendJsonResponse($response);
+    }
+} catch (Exception $e) {
+    $response = array('status' => 'failed', 'message' => $e->getMessage());
+    sendJsonResponse($response);
+}
 ?>
