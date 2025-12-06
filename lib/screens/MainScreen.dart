@@ -30,16 +30,13 @@ class _MainScreenState extends State<MainScreen> {
     loadPets();
   }
 
-  // Inside _MainScreenState
   Future<void> loadPets() async {
-    // 1. Initial State Setup
     pets.clear();
     setState(() {
       isLoading = true;
       status = "Loading...";
     });
 
-    // 2. Validation (Ensure user ID is present for POST request)
     final userId = widget.user?.userId;
     if (userId == null || userId.isEmpty) {
       setState(() {
@@ -50,34 +47,24 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     try {
-      // Using POST as established for filtering by user ID
       final response = await http.post(
         Uri.parse('${MyConfig.baseUrl}/pawpal/api/get_my_pets.php'),
-        body: {
-          "user_id": userId.toString(),
-          "curpage": curpage
-              .toString(), // Include current page for PHP pagination
-          // If your MainScreen supports search, you can add "search": "searchQuery" here
-        },
+        body: {"user_id": userId.toString(), "curpage": curpage.toString()},
       );
 
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
 
-        // 3. Success/Data Check
-        // PHP uses 'status' and 'pets' keys in the response
         if (jsonResponse['status'] == 'success' &&
             jsonResponse['pets'] != null &&
             jsonResponse['pets'].isNotEmpty) {
           List data = jsonResponse['pets'];
 
-          // Clear list and map items
           pets.clear();
           for (var item in data) {
             pets.add(Pet.fromJson(item));
           }
 
-          // Update pagination results, using safe parsing
           numofpage = int.tryParse(jsonResponse['numofpage'].toString()) ?? 1;
           numofresult =
               int.tryParse(jsonResponse['numberofresult'].toString()) ?? 0;
@@ -87,16 +74,13 @@ class _MainScreenState extends State<MainScreen> {
             status = ""; // Clear status on successful load
           });
         } else {
-          // 4. Success but EMPTY data (Status is 'success' or 'failed' but no pets)
           setState(() {
             pets.clear();
             isLoading = false;
-            // Use the message from PHP if available, otherwise default
             status = jsonResponse['message'] ?? "No submissions yet.";
           });
         }
       } else {
-        // 5. Request Failed (HTTP status code != 200)
         setState(() {
           pets.clear();
           isLoading = false;
@@ -104,7 +88,6 @@ class _MainScreenState extends State<MainScreen> {
         });
       }
     } catch (e) {
-      // 6. Network/Decoding Error
       print("Error in loadPets: $e");
       setState(() {
         pets.clear();
