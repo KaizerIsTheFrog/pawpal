@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pawpal/my_config.dart';
+import 'package:pawpal/MyConfig.dart';
 import 'package:pawpal/screens/LoginScreen.dart';
 
 class RegisterScreen extends StatefulWidget {
