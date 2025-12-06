@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:pawpal/models/user.dart';
 import 'package:pawpal/MyConfig.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:pawpal/screens/MainScreen.dart';
 
 class SubmitPetScreen extends StatefulWidget {
   final User? user;
@@ -44,6 +46,7 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
   File? image;
   Uint8List? webImage; // for web
   late double height, width;
+  late Position myposition;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +129,7 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                   TextField(
                     controller: petnameController,
                     decoration: InputDecoration(
-                      labelText: 'Title',
+                      labelText: 'Pet Name',
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -155,15 +158,15 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                   SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
-                      labelText: 'Select Location',
+                      labelText: 'Select Category',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    items: submissionCategory.map((String location) {
+                    items: submissionCategory.map((String category) {
                       return DropdownMenuItem<String>(
-                        value: location,
-                        child: Text(location),
+                        value: category,
+                        child: Text(category),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -269,7 +272,6 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
   }
 
   void showSubmitDialog() {
-    // Title validation
     if (petnameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -325,9 +327,13 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context);
+                myposition = await _determinePosition();
+                print(myposition.latitude);
+                print(myposition.longitude);
                 submitPet();
+                setState(() {});
               },
               child: const Text('Submit'),
             ),
@@ -335,6 +341,44 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
         );
       },
     );
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+    }
+
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
   }
 
   void submitPet() {
@@ -357,6 +401,8 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
             'category': selectedSubmission,
             'description': description,
             'image': base64image,
+            'lat': myposition.latitude.toString(),
+            'lng': myposition.longitude.toString(),
           },
         )
         .then((response) {
@@ -372,6 +418,12 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                 ),
               );
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MainScreen(user: widget.user),
+                ),
+              );
             } else {
               if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
