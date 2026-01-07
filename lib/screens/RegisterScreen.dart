@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pawpal/my_config.dart';
-import 'package:pawpal/screens/login_page.dart';
+import 'package:pawpal/screens/LoginPage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -234,8 +234,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           },
         )
         .then((response) {
-          log(response.body);
-          log(response.statusCode.toString());
+          // log(response.body);
+          // log(response.statusCode.toString());
           if (response.statusCode == 200) {
             var jsonResponse = response.body;
             var resarray = jsonDecode(jsonResponse);
@@ -245,6 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               SnackBar snackBar = const SnackBar(
                 content: Text('Registration successful'),
               );
+              Navigator.pop(context);
               if (isLoading) {
                 if (!mounted) return;
                 Navigator.pop(context); // Close the loading dialog

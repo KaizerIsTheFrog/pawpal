@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pawpal/screens/login_page.dart';
+import 'package:pawpal/screens/LoginPage.dart';
 
 void main() {
   runApp(const MainApp());
