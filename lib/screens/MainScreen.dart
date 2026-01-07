@@ -39,8 +39,6 @@ class _MainScreenState extends State<MainScreen> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
 
-    final contentWidth = screenWidth > 900 ? 900.0 : screenWidth;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
