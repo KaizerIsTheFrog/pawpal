@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_cropper/image_cropper.dart';
@@ -21,6 +22,9 @@ class SubmitPetScreen extends StatefulWidget {
 }
 
 class _SubmitPetScreenState extends State<SubmitPetScreen> {
+  // TODO: implement the input fields
+  String? petName;
+
   List<String> petTypes = [
     'Cat',
     'Dog',
@@ -33,20 +37,22 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
     'Farm Animal', // goat, cow, chicken
     'Other',
   ];
-
-  List<String> submissionCategory = [
-    'Adoption',
-    'Donation Request',
-    'Help/Rescue',
-  ];
-
   String selectedPetType = 'Cat'; //Default
+
+  List<String> category = ['Adoption', 'Donation Request', 'Help/Rescue'];
   String selectedCategory = 'Adoption'; //Default
-  String? petName;
-  String? locationLongtitude;
+
+  int age = 0;
+
+  List<String> gender = ['Male', 'Female', 'Unknown'];
+  String selectedPetGender = 'Unknown'; //Default
+
+  String? healthStatus;
+  String? locationlongitude;
+  String? locationlatitude;
   String? description;
 
-  TextEditingController longtitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
   TextEditingController latitudeController = TextEditingController();
   late Position position;
   late double screenWidth, screenHeight;
@@ -405,6 +411,131 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
 
                       SizedBox(height: 16),
 
+                      // Pet Gender
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: 'Select Gender',
+                          hintText: 'What is your pet gender?',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.orangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.deepOrangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        items: gender.map((String selectgender) {
+                          return DropdownMenuItem<String>(
+                            value: selectgender,
+                            child: Text(selectgender),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedPetGender = newValue!;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select pet gender';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Age
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter
+                              .digitsOnly, // Allows only digits
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'Age',
+                          hintText: 'Enter age',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.orangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.deepOrangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please fill in health status";
+                          }
+
+                          return null;
+                        },
+                        onSaved: (value) {
+                          age = int.parse(value!);
+                        },
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // Health Status
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Health Status',
+                          hintText: 'Enter health status',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.orangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.deepOrangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please fill in health status";
+                          }
+
+                          return null;
+                        },
+                        onSaved: (value) {
+                          healthStatus = value;
+                        },
+                        maxLines: 2,
+                        maxLength: 64,
+                      ),
+
+                      SizedBox(height: 16),
+
                       // Category
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
@@ -428,7 +559,7 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                             ),
                           ),
                         ),
-                        items: submissionCategory.map((String category) {
+                        items: category.map((String category) {
                           return DropdownMenuItem<String>(
                             value: category,
                             child: Text(category),
@@ -449,7 +580,7 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
 
                       SizedBox(height: 16),
 
-                      //Description (Minimum 10 Charaters)
+                      // Description
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Description',
@@ -486,53 +617,14 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                         maxLength: 64,
                       ),
 
-                      //Location (Longitude)
-                      TextFormField(
-                        controller: longtitudeController,
-                        decoration: InputDecoration(
-                          labelText: 'Longtitude',
-                          hintText: 'Enter longtitute here',
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                            child: Icon(Icons.location_on, color: Colors.black),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Colors.orangeAccent,
-                              width: 2,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Colors.deepOrangeAccent,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please fill in longtitude";
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          locationLongtitude = value;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       //Location (Latitude)
                       TextFormField(
                         controller: latitudeController,
                         decoration: InputDecoration(
-                          labelText: 'Longtitude',
-                          hintText: 'Enter longtitute here',
+                          labelText: 'Latitude',
+                          hintText: 'Enter latitude here',
                           prefixIcon: Padding(
                             padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
                             child: Icon(Icons.location_on, color: Colors.black),
@@ -562,7 +654,48 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
                           return null;
                         },
                         onSaved: (value) {
-                          locationLongtitude = value;
+                          locationlatitude = value;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      //Location (Longitude)
+                      TextFormField(
+                        controller: longitudeController,
+                        decoration: InputDecoration(
+                          labelText: 'Longitude',
+                          hintText: 'Enter longitude here',
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                            child: Icon(Icons.location_on, color: Colors.black),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.orangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.deepOrangeAccent,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please fill in longitude";
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          locationlongitude = value;
                         },
                       ),
 
@@ -625,7 +758,7 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
   }
 
   void autoFillLocation() {
-    longtitudeController.text = position.longitude.toString();
+    longitudeController.text = position.longitude.toString();
     latitudeController.text = position.latitude.toString();
   }
 
@@ -832,7 +965,7 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
     }
     print(base64image);
     String latitude = latitudeController.text.trim();
-    String longitude = longtitudeController.text.trim();
+    String longitude = longitudeController.text.trim();
 
     await http
         .post(
@@ -841,6 +974,9 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
             'user_id': widget.user?.userId,
             'pet_name': petName,
             'pet_type': selectedPetType,
+            'gender': selectedPetGender,
+            'age': age.toString(),
+            'health_status': healthStatus,
             'category': selectedCategory,
             'description': description,
             'lat': latitude,

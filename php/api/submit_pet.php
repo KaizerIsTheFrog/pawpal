@@ -9,7 +9,7 @@
 		exit();
 	}
 
-    if (!isset($_POST['user_id']) || !isset($_POST['pet_name']) || !isset($_POST['pet_type']) || !isset($_POST['category']) || !isset($_POST['description']) || !isset($_POST['lat']) || !isset($_POST['lng']) || !isset($_POST['image'])) {
+    if (!isset($_POST['user_id']) || !isset($_POST['pet_name']) || !isset($_POST['pet_type']) || !isset($_POST['gender']) || !isset($_POST['age']) || !isset($_POST['health_status']) || !isset($_POST['category']) || !isset($_POST['description']) || !isset($_POST['lat']) || !isset($_POST['lng']) || !isset($_POST['image'])) {
 			http_response_code(400);
 			$response = array('success' => false, 'message' => 'Bad Request');
 			exit();
@@ -18,6 +18,9 @@
 	$userid = $_POST['user_id'];
 	$petName = $_POST['pet_name'];
 	$petType = $_POST['pet_type'];
+	$gender = $_POST['gender'];
+	$age = $_POST['age'];
+	$healthStatus = $_POST['health_status'];
 	$category = $_POST['category'];
 	$description = addslashes($_POST['description']);
 	$lat = $_POST['lat'];
@@ -25,8 +28,8 @@
 	$imageList = json_decode($_POST['image'], true);
 
 	// Insert new pet into database
-	$sqlinsertpet = "INSERT INTO `tbl_pets`(`user_id`, `pet_name`, `pet_type`, `category`, `description`,`image_paths`,`lat`, `lng`) 
-	VALUES ('$userid','$petName','$petType','$category','$description','','$lat','$lng')";
+	$sqlinsertpet = "INSERT INTO `tbl_pets`(`user_id`, `pet_name`, `pet_type`, `gender`, `age`, `health_status`, `category`, `description`,`image_paths`,`lat`, `lng`) 
+	VALUES ('$userid','$petName','$petType','$gender','$age','$healthStatus','$category','$description','','$lat','$lng')";
 	try{
 		if ($conn->query($sqlinsertpet) === TRUE){
             $countImage = count($imageList);

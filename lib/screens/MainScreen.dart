@@ -300,45 +300,47 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void loadData(String search) {
+    String url =
+        '${MyConfig.baseUrl}/pawpal/api/get_other_pets.php?user_id=${widget.user!.userId}';
+
+    // if search is not empty, add to url
+    if (search.isNotEmpty) {
+      url += '&search=$search';
+    }
+
     setState(() {
       status = "Loading...";
     });
     petList.clear();
-    http
-        .get(
-          Uri.parse(
-            '${MyConfig.baseUrl}/pawpal/api/get_my_pets.php?search=$search', //search logic
-          ),
-        )
-        .then((response) {
-          if (response.statusCode == 200) {
-            var jsonResponse = jsonDecode(response.body);
-            if (jsonResponse['success'] == true &&
-                jsonResponse['data'] != null &&
-                jsonResponse['data'].isNotEmpty) {
-              // load data to list
-              petList.clear();
-              for (var item in jsonResponse['data']) {
-                petList.add(Pet.fromJson(item));
-              }
-              setState(() {
-                status = "";
-              });
-            } else {
-              // success but didn't have any data inserted
-              setState(() {
-                petList.clear();
-                status = "No Data Found";
-              });
-            }
-          } else {
-            // request failed
-            setState(() {
-              petList.clear();
-              status = "Failed to load services";
-            });
+    http.get(Uri.parse(url)).then((response) {
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['success'] == true &&
+            jsonResponse['data'] != null &&
+            jsonResponse['data'].isNotEmpty) {
+          // load data to list
+          petList.clear();
+          for (var item in jsonResponse['data']) {
+            petList.add(Pet.fromJson(item));
           }
+          setState(() {
+            status = "";
+          });
+        } else {
+          // success but didn't have any data inserted
+          setState(() {
+            petList.clear();
+            status = "No Data Found";
+          });
+        }
+      } else {
+        // request failed
+        setState(() {
+          petList.clear();
+          status = "Failed to load services";
         });
+      }
+    });
   }
 
   void showSearchDialog() {
@@ -357,7 +359,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           content: TextField(
             controller: searchController,
-            decoration: InputDecoration(hintText: 'Search Pet (e.g. Kitty...)'),
+            decoration: InputDecoration(hintText: 'Search Pet (Name)'),
           ),
           actions: [
             TextButton(
