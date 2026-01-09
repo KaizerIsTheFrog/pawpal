@@ -2,16 +2,16 @@ class User {
   String? userId;
   String? name;
   String? email;
-  String? password;
   String? phone;
+  String? password;
   String? regdate;
 
   User({
     this.userId,
     this.name,
     this.email,
-    this.password,
     this.phone,
+    this.password,
     this.regdate,
   });
 
@@ -19,8 +19,8 @@ class User {
     userId = json['user_id'];
     name = json['name'];
     email = json['email'];
-    password = json['password'];
     phone = json['phone'];
+    password = json['password'];
     regdate = json['reg_date'];
   }
 
@@ -29,8 +29,8 @@ class User {
     data['user_id'] = userId;
     data['name'] = name;
     data['email'] = email;
-    data['password'] = password;
     data['phone'] = phone;
+    data['password'] = password;
     data['reg_date'] = regdate;
     return data;
   }

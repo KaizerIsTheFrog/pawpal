@@ -278,8 +278,9 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        const PetDetailsScreen(
-                                                          user: null,
+                                                        PetDetailsScreen(
+                                                          user: widget.user,
+                                                          pet: petList[index],
                                                         ),
                                                   ),
                                                 );

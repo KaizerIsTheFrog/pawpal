@@ -3,6 +3,9 @@ class Pet {
   String? userId;
   String? petName;
   String? petType;
+  String? gender;
+  String? age;
+  String? healthStatus;
   String? category;
   String? description;
   List<String>? imagePaths;
@@ -17,6 +20,9 @@ class Pet {
     this.userId,
     this.petName,
     this.petType,
+    this.gender,
+    this.age,
+    this.healthStatus,
     this.category,
     this.description,
     this.lat,
@@ -32,6 +38,9 @@ class Pet {
     userId = json['user_id'];
     petName = json['pet_name'];
     petType = json['pet_type'];
+    gender = json['gender'];
+    age = json['age'];
+    healthStatus = json['health_status'];
     category = json['category'];
     description = json['description'];
     lat = json['lat'];
@@ -50,6 +59,9 @@ class Pet {
     data['user_id'] = userId;
     data['pet_name'] = petName;
     data['pet_type'] = petType;
+    data['gender'] = gender;
+    data['age'] = age;
+    data['health_status'] = healthStatus;
     data['category'] = category;
     data['description'] = description;
     data['lat'] = lat;
