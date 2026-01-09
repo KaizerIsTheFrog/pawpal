@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:pawpal/models/pet.dart';
 import 'package:pawpal/models/user.dart';
 import 'package:pawpal/my_config.dart';
+import 'package:pawpal/screens/PetDetailsScreen.dart';
 import 'package:pawpal/screens/SubmitPetScreen.dart';
 import 'package:pawpal/widgets/MyDrawer.dart';
 
@@ -27,10 +28,13 @@ class _MainScreenState extends State<MainScreen> {
   int numofresult = 0;
   var color;
 
+  String search = '';
+  String filter = '';
+
   @override
   void initState() {
     super.initState();
-    loadData('');
+    loadData('', ''); // load all pets initially
   }
 
   @override
@@ -61,7 +65,7 @@ class _MainScreenState extends State<MainScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26.withValues(alpha: 0.1),
@@ -90,11 +94,20 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
 
+                      IconButton(
+                        icon: const Icon(Icons.filter_list, color: Colors.grey),
+                        onPressed: showFilterDialog,
+                        tooltip: 'Filter pets',
+                      ),
+
                       // Remove/Reset search criteria
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.grey),
                         onPressed: () {
-                          loadData(''); // reload full list
+                          setState(() {
+                            filter = "";
+                          });
+                          loadData('', ''); // reload full list
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text("Search has been reset"),
@@ -261,7 +274,15 @@ class _MainScreenState extends State<MainScreen> {
                                             ),
                                             IconButton(
                                               onPressed: () {
-                                                showDetailDialog(index);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const PetDetailsScreen(
+                                                          user: null,
+                                                        ),
+                                                  ),
+                                                );
                                               },
                                               icon: const Icon(
                                                 Icons.arrow_forward_ios,
@@ -299,13 +320,18 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void loadData(String search) {
+  void loadData(String search, String filter) {
     String url =
         '${MyConfig.baseUrl}/pawpal/api/get_other_pets.php?user_id=${widget.user!.userId}';
 
     // if search is not empty, add to url
     if (search.isNotEmpty) {
       url += '&search=$search';
+    }
+
+    // if filter not empty, add to url
+    if (filter.isNotEmpty) {
+      url += '&filter=$filter';
     }
 
     setState(() {
@@ -377,11 +403,11 @@ class _MainScreenState extends State<MainScreen> {
                 style: TextStyle(fontSize: 15, color: Colors.blueAccent),
               ),
               onPressed: () {
-                String search = searchController.text;
+                search = searchController.text;
                 if (search.isEmpty) {
-                  loadData('');
+                  loadData('', '');
                 } else {
-                  loadData(search);
+                  loadData(search, filter);
                 }
                 Navigator.of(context).pop();
               },
@@ -392,209 +418,321 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void showDetailDialog(int index) {
+  void showFilterDialog() {
+    String tempFilter = filter;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(petList[index].petName.toString()),
-          content: SizedBox(
-            width: screenWidth,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.5,
-                    height: screenHeight * 0.25,
-                    child: PageView.builder(
-                      itemCount: 3,
-                      itemBuilder: (context, i) {
-                        return Image.network(
-                          //Display 3 images, if there are only 2 image, the third became default icon (broke icon)
-                          '${MyConfig.baseUrl}/pawpal/assets/pets/pet_${petList[index].petId}_${i + 1}.png',
-                          fit: BoxFit.fill,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.broken_image,
-                              size: 60,
-                              color: Colors.grey,
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-
-                  SizedBox(height: 10),
-                  Table(
-                    border: TableBorder.all(
-                      color: Colors.grey,
-                      width: 1.0,
-                      style: BorderStyle.solid,
-                    ),
-                    columnWidths: {
-                      0: FixedColumnWidth(100.0),
-                      1: FlexColumnWidth(),
-                    },
-                    children: [
-                      TableRow(
-                        children: [
-                          TableCell(
-                            // Use TableCell to apply consistent styling/padding
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Pet Name',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(petList[index].petName.toString()),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Description',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                petList[index].description.toString(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Pet Type',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(petList[index].petType.toString()),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Category',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(petList[index].category.toString()),
-                            ),
-                          ),
-                        ],
-                      ),
-                      TableRow(
-                        children: [
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Submitter ID',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          TableCell(
-                            verticalAlignment:
-                                TableCellVerticalAlignment.middle,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(petList[index].userId.toString()),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 5),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text(
-                'Close',
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: Text(
+                'Filter by Pet Type',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
+                  fontSize: 20,
+                  color: const Color.fromARGB(255, 31, 66, 127),
                 ),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    initialValue: tempFilter,
+                    decoration: InputDecoration(
+                      labelText: 'Select Pet Type',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    items: [
+                      DropdownMenuItem(value: '', child: Text('All Pets')),
+                      DropdownMenuItem(value: 'Cat', child: Text('Cat')),
+                      DropdownMenuItem(value: 'Dog', child: Text('Dog')),
+                      DropdownMenuItem(value: 'Bird', child: Text('Bird')),
+                      DropdownMenuItem(value: 'Fish', child: Text('Fish')),
+                      DropdownMenuItem(
+                        value: 'Reptile',
+                        child: Text('Reptile'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Small Mammal',
+                        child: Text('Small Mammal'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Exotic Pet',
+                        child: Text('Exotic Pet'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Amphibian',
+                        child: Text('Amphibian'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Farm Animal',
+                        child: Text('Farm Animal'),
+                      ),
+                      DropdownMenuItem(value: 'Other', child: Text('Other')),
+                    ],
+                    onChanged: (String? newValue) {
+                      setStateDialog(() {
+                        tempFilter = newValue!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text(
+                    'Apply',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      filter = tempFilter;
+                    });
+                    Navigator.of(context).pop();
+                    loadData(search, filter); // Reload with filter
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          tempFilter == ''
+                              ? 'Filter for All pets'
+                              : 'Filter for $tempFilter only',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
+
+  // void showDetailDialog(int index) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text(petList[index].petName.toString()),
+  //         content: SizedBox(
+  //           width: screenWidth,
+  //           child: SingleChildScrollView(
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 SizedBox(
+  //                   width: screenWidth * 0.5,
+  //                   height: screenHeight * 0.25,
+  //                   child: PageView.builder(
+  //                     itemCount: 3,
+  //                     itemBuilder: (context, i) {
+  //                       return Image.network(
+  //                         //Display 3 images, if there are only 2 image, the third became default icon (broke icon)
+  //                         '${MyConfig.baseUrl}/pawpal/assets/pets/pet_${petList[index].petId}_${i + 1}.png',
+  //                         fit: BoxFit.fill,
+  //                         errorBuilder: (context, error, stackTrace) {
+  //                           return const Icon(
+  //                             Icons.broken_image,
+  //                             size: 60,
+  //                             color: Colors.grey,
+  //                           );
+  //                         },
+  //                       );
+  //                     },
+  //                   ),
+  //                 ),
+
+  //                 SizedBox(height: 10),
+  //                 Table(
+  //                   border: TableBorder.all(
+  //                     color: Colors.grey,
+  //                     width: 1.0,
+  //                     style: BorderStyle.solid,
+  //                   ),
+  //                   columnWidths: {
+  //                     0: FixedColumnWidth(100.0),
+  //                     1: FlexColumnWidth(),
+  //                   },
+  //                   children: [
+  //                     TableRow(
+  //                       children: [
+  //                         TableCell(
+  //                           // Use TableCell to apply consistent styling/padding
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               'Pet Name',
+  //                               style: TextStyle(
+  //                                 fontSize: 15,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(petList[index].petName.toString()),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     TableRow(
+  //                       children: [
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               'Description',
+  //                               style: TextStyle(
+  //                                 fontSize: 15,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               petList[index].description.toString(),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     TableRow(
+  //                       children: [
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               'Pet Type',
+  //                               style: TextStyle(
+  //                                 fontSize: 15,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(petList[index].petType.toString()),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     TableRow(
+  //                       children: [
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               'Category',
+  //                               style: TextStyle(
+  //                                 fontSize: 15,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(petList[index].category.toString()),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     TableRow(
+  //                       children: [
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(
+  //                               'Submitter ID',
+  //                               style: TextStyle(
+  //                                 fontSize: 15,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         TableCell(
+  //                           verticalAlignment:
+  //                               TableCellVerticalAlignment.middle,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: Text(petList[index].userId.toString()),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 SizedBox(height: 5),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: Text(
+  //               'Close',
+  //               style: TextStyle(
+  //                 fontSize: 15,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Colors.red,
+  //               ),
+  //             ),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }

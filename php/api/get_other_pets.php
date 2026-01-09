@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // allow any site to send credential to my server
+header("Access-Control-Allow-Origin: *");
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     include 'dbconnect.php';
@@ -30,17 +30,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         WHERE s.user_id != $currentUserId
     ";
 
+    // condition string for search and filter
+    $sqlcondition = "";
+
     // Search logic
     if (isset($_GET['search']) && !empty($_GET['search'])) {
         $search = $conn->real_escape_string($_GET['search']);
-        $sqlloadpet = $baseQuery . "
+        $sqlcondition .= "
             AND (s.pet_name LIKE '%$search%' 
-               OR s.pet_type LIKE '%$search%'
-               OR s.category LIKE '%$search%')
-            ORDER BY s.pet_id DESC";
-    } else {
-        $sqlloadpet = $baseQuery . " ORDER BY s.pet_id DESC";
+            OR s.pet_type LIKE '%$search%'
+            OR s.category LIKE '%$search%')";
     }
+
+    if (isset($_GET['filter']) && !empty($_GET['filter'])) {
+        $filterType = $conn->real_escape_string($_GET['filter']);
+        $sqlcondition .= " AND s.pet_type = '$filterType'";
+    }
+
+    $sqlloadpet = $baseQuery . $sqlcondition . " ORDER BY s.pet_id DESC";
 
     // Execute query
     $result = $conn->query($sqlloadpet);
@@ -58,9 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     }
 
 } else {
-    $response = array('success' => false,'message' => $e->getMessage());
+    $response = array('success' => false, 'message' => 'Invalid request method');
     sendJsonResponse($response);
-    exit();
 }
 
 function sendJsonResponse($sentArray)
