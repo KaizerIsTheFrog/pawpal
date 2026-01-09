@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AnimatedRoute {
-  static PageRouteBuilder slideFromRight(Widget page) {
+  static PageRouteBuilder slideFromLeftDrawer(Widget page) {
     return PageRouteBuilder(
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 150),
       pageBuilder: (_, __, ___) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(1.0, 0.0);
+        const begin = Offset(-1.0, 0.0);
         const end = Offset.zero;
         final tween = Tween(
           begin: begin,

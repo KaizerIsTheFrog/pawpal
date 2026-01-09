@@ -32,10 +32,14 @@ class _MyDrawerState extends State<MyDrawer> {
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
-                AnimatedRoute.slideFromRight(MainScreen(user: widget.user)),
+                AnimatedRoute.slideFromLeftDrawer(
+                  MainScreen(user: widget.user),
+                ),
+                // MaterialPageRoute(
+                //   builder: (context) => MainScreen(user: widget.user),
+                // ),
               );
             },
           ),
