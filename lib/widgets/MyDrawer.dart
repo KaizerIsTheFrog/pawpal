@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pawpal/models/user.dart';
+import 'package:pawpal/screens/MyDonationsScreen.dart';
+import 'package:pawpal/screens/MyPetsScreen.dart';
+import 'package:pawpal/screens/ProfileScreen.dart';
 import 'package:pawpal/widgets/DrawerAnimation.dart';
 import 'package:pawpal/screens/LoginScreen.dart';
 import 'package:pawpal/screens/MainScreen.dart';
@@ -28,7 +31,77 @@ class _MyDrawerState extends State<MyDrawer> {
             accountName: Text(widget.user?.name ?? 'Guest'),
             accountEmail: Text(widget.user?.email ?? 'Guest'),
           ),
+
           ListTile(
+            // Profile button
+            leading: Icon(Icons.person),
+            title: Text('Profile'),
+            onTap: () {
+              if (widget.user?.userId == '0') {
+                //showdialog
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: Row(
+                      children: const [
+                        Icon(Icons.lock_outline),
+                        SizedBox(width: 8),
+                        Text("Login Required"),
+                      ],
+                    ),
+                    content: const Text(
+                      "Please login to continue and access this feature.",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orangeAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            AnimatedRoute.slideFromLeftDrawer(
+                              const LoginPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Login",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+                return;
+              }
+
+              if (widget.user != null) {
+                Navigator.pushReplacement(
+                  context,
+                  AnimatedRoute.slideFromLeftDrawer(
+                    ProfileScreen(user: widget.user!),
+                  ),
+                );
+              }
+            },
+          ),
+
+          const Divider(color: Colors.orangeAccent),
+
+          ListTile(
+            // Home button
             leading: Icon(Icons.home),
             title: Text('Home'),
             onTap: () {
@@ -43,96 +116,46 @@ class _MyDrawerState extends State<MyDrawer> {
               );
             },
           ),
-          // ListTile(
-          //   leading: Icon(Icons.pets),
-          //   title: Text('My Pets'),
-          //   onTap: () {
-          //     Navigator.pop(context);
-          //     Navigator.pushReplacement(
-          //       context,
-          //       AnimatedRoute.slideFromRight(MyPetsScreen(user: widget.user)),
-          //     );
-          //   },
-          // ),
-          // ListTile(
-          //   leading: Icon(Icons.logout),
-          //   title: Text('Logout'),
-          //   onTap: () {
-          //     logout();
-          //   },
-          // ),
-          // ListTile(
-          //   leading: Icon(Icons.person),
-          //   title: Text('Profile'),
-          //   onTap: () {
-          //     if (widget.user?.userId == '0') {
-          //       //showdialog
-          //       showDialog(
-          //         context: context,
-          //         builder: (_) => AlertDialog(
-          //           shape: RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.circular(16),
-          //           ),
-          //           title: Row(
-          //             children: const [
-          //               Icon(Icons.lock_outline, color: Color(0xFF1F3C88)),
-          //               SizedBox(width: 8),
-          //               Text("Login Required"),
-          //             ],
-          //           ),
-          //           content: const Text(
-          //             "Please login to continue and access this feature.",
-          //           ),
-          //           actions: [
-          //             TextButton(
-          //               onPressed: () => Navigator.pop(context),
-          //               child: const Text("Cancel"),
-          //             ),
-          //             ElevatedButton(
-          //               style: ElevatedButton.styleFrom(
-          //                 backgroundColor: const Color(0xFF1F3C88),
-          //                 shape: RoundedRectangleBorder(
-          //                   borderRadius: BorderRadius.circular(10),
-          //                 ),
-          //               ),
-          //               onPressed: () {
-          //                 Navigator.pushReplacement(
-          //                   context,
-          //                   AnimatedRoute.slideFromRight(const LoginPage()),
-          //                 );
-          //               },
-          //               child: const Text(
-          //                 "Login",
-          //                 style: TextStyle(color: Colors.white),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       );
 
-          //       return;
-          //     }
-          //     Navigator.pop(context);
-          //     if (widget.user != null) {
-          //       Navigator.pushReplacement(
-          //         context,
-          //         AnimatedRoute.slideFromRight(ProfilePage(user: widget.user!)),
-          //       );
-          //     }
-          //   },
-          // ),
+          ListTile(
+            // My Pets button
+            leading: Icon(Icons.pets),
+            title: Text('My Pets'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                AnimatedRoute.slideFromLeftDrawer(
+                  MyPetsScreen(user: widget.user),
+                ),
+              );
+            },
+          ),
 
-          // ListTile(
-          //   leading: Icon(Icons.login),
-          //   title: Text('Login'),
-          //   onTap: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => LoginPage()),
-          //     );
-          //   },
-          // ),
-          const Divider(color: Colors.grey),
+          ListTile(
+            // My Donations button
+            leading: Icon(Icons.volunteer_activism),
+            title: Text('My Donations'),
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                AnimatedRoute.slideFromLeftDrawer(
+                  MyDonationsScreen(user: widget.user),
+                ),
+              );
+            },
+          ),
+
+          const Divider(color: Colors.orangeAccent),
+
+          ListTile(
+            // Logout button
+            leading: Icon(Icons.logout),
+            title: Text('Logout'),
+            onTap: () {
+              logout();
+            },
+          ),
+
           SizedBox(
             height: screenHeight / 3.5,
             child: Column(
