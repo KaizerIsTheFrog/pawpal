@@ -28,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    print(width);
+
     if (width > 400) {
       width = 400;
     } else {
@@ -253,7 +253,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   isLoading = false;
                 });
               }
-              Navigator.pop(context); // Close the registration dialog
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
               Navigator.push(
                 context,

@@ -6,9 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:pawpal/models/pet.dart';
 import 'package:pawpal/models/user.dart';
 import 'package:pawpal/my_config.dart';
-import 'package:pawpal/screens/LoginScreen.dart';
 import 'package:pawpal/screens/SubmitPetScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pawpal/widgets/MyDrawer.dart';
 
 class MainScreen extends StatefulWidget {
   final User? user;
@@ -42,12 +41,12 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Welcome, ${widget.user?.name}!',
+          'All Pets',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orangeAccent,
-        actions: [IconButton(onPressed: logout, icon: Icon(Icons.logout))],
       ),
+      drawer: MyDrawer(user: widget.user),
       backgroundColor: Color(0xFFFFF8F0),
       body: SingleChildScrollView(
         child: Center(
@@ -297,19 +296,6 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: Colors.white,
         child: Icon(Icons.add, color: const Color.fromRGBO(68, 138, 255, 1)),
       ),
-    );
-  }
-
-  void logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('email');
-    prefs.remove('password');
-    prefs.remove('rememberMe');
-
-    if (!mounted) return;
-    await Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 

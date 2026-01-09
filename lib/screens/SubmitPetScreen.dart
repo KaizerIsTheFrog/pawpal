@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:pawpal/models/user.dart';
 import 'package:pawpal/my_config.dart';
 import 'package:pawpal/screens/MainScreen.dart';
+import 'package:pawpal/widgets/MyDrawer.dart';
 
 class SubmitPetScreen extends StatefulWidget {
   final User? user;
@@ -79,6 +80,8 @@ class _SubmitPetScreenState extends State<SubmitPetScreen> {
         centerTitle: true,
         backgroundColor: Colors.orangeAccent,
       ),
+
+      drawer: MyDrawer(user: widget.user),
 
       body: SingleChildScrollView(
         child: Center(
