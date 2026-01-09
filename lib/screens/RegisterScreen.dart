@@ -253,7 +253,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   isLoading = false;
                 });
               }
-              Navigator.pop(context); // Close the registration dialog
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
               Navigator.push(
                 context,

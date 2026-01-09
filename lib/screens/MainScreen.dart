@@ -6,10 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:pawpal/models/pet.dart';
 import 'package:pawpal/models/user.dart';
 import 'package:pawpal/my_config.dart';
-import 'package:pawpal/screens/LoginScreen.dart';
 import 'package:pawpal/screens/SubmitPetScreen.dart';
 import 'package:pawpal/widgets/MyDrawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   final User? user;
