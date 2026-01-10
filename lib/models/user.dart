@@ -4,6 +4,7 @@ class User {
   String? email;
   String? phone;
   String? password;
+  String? profileImagePath;
   String? regdate;
 
   User({
@@ -12,6 +13,7 @@ class User {
     this.email,
     this.phone,
     this.password,
+    this.profileImagePath,
     this.regdate,
   });
 
@@ -21,6 +23,7 @@ class User {
     email = json['email'];
     phone = json['phone'];
     password = json['password'];
+    profileImagePath = json['profile_image_path'];
     regdate = json['reg_date'];
   }
 
@@ -31,6 +34,7 @@ class User {
     data['email'] = email;
     data['phone'] = phone;
     data['password'] = password;
+    data['profile_image_path'] = profileImagePath;
     data['reg_date'] = regdate;
     return data;
   }
