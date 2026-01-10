@@ -431,10 +431,7 @@ class _MainScreenState extends State<MainScreen> {
               title: Text(
                 'Filter by Pet Type',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: const Color.fromARGB(255, 31, 66, 127),
-                ),
+                style: TextStyle(fontSize: 20, color: Colors.deepOrangeAccent),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,

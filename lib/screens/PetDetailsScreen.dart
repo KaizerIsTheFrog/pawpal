@@ -427,11 +427,6 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                                 'Donate To This Pet',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.volunteer_activism,
-                                color: Colors.white,
-                              ),
                             ],
                           ),
                         )
@@ -454,13 +449,11 @@ class _PetDetailsScreenState extends State<PetDetailsScreen> {
                                 'Request to Adopt This Pet',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(width: 8),
-                              Icon(Icons.pets, color: Colors.white),
                             ],
                           ),
                         ),
 
-                  SizedBox(height: 24),
+                  SizedBox(height: 32),
                 ],
               ),
             ),
