@@ -45,7 +45,7 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'All Pets',
+          'My Pets',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orangeAccent,
@@ -513,7 +513,7 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                       SnackBar(
                         content: Text(
                           tempFilter == ''
-                              ? 'Filter for All pets'
+                              ? 'Filter for My pets'
                               : 'Filter for $tempFilter only',
                         ),
                       ),
