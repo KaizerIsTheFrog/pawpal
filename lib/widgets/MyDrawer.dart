@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pawpal/models/user.dart';
+import 'package:pawpal/my_config.dart';
 import 'package:pawpal/screens/MyDonationsScreen.dart';
 import 'package:pawpal/screens/MyPetsScreen.dart';
 import 'package:pawpal/screens/ProfileScreen.dart';
@@ -27,7 +28,11 @@ class _MyDrawerState extends State<MyDrawer> {
       child: ListView(
         children: [
           UserAccountsDrawerHeader(
-            currentAccountPicture: CircleAvatar(radius: 15, child: Text('A')),
+            currentAccountPicture: CircleAvatar(
+              foregroundImage: NetworkImage(
+                '${MyConfig.baseUrl}/pawpal/assets/${widget.user!.profileImagePath}',
+              ),
+            ),
             accountName: Text(widget.user?.name ?? 'Guest'),
             accountEmail: Text(widget.user?.email ?? 'Guest'),
           ),
