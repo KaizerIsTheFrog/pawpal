@@ -1,8 +1,8 @@
 <?php
     $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "pawpal_db";
+    $username = "youcapfu_pawpal_kz";
+    $password = "s!T1.q{=(+t7";
+    $dbname = "youcapfu_pawpal_db_kz";
     // $port = 3307;
 
     // Create connection

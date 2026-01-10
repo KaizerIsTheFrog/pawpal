@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:pawpal/models/pet.dart';
 import 'package:pawpal/models/user.dart';
 import 'package:pawpal/my_config.dart';
+import 'package:pawpal/screens/PaymentPage.dart';
 import 'package:pawpal/widgets/MyDrawer.dart';
 
 class PetDonationScreen extends StatefulWidget {
@@ -285,48 +286,21 @@ class _PetDonationScreenState extends State<PetDonationScreen> {
     }
   }
 
-  // Show Payment Dialog (Placeholder for third-party payment)
+  // Show Payment Dialog for Billplz Payment Gateway
   void _showPaymentDialog(double amount) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.payment, color: Colors.orangeAccent),
-              SizedBox(width: 8),
-              Text('Payment Gateway'),
-            ],
-          ),
+          title: Row(children: [Text('Payment Gateway')]),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.credit_card, size: 64, color: Colors.orangeAccent),
+              Icon(Icons.credit_card, size: 64, color: Colors.deepOrangeAccent),
               SizedBox(height: 16),
               Text(
                 'Amount: RM ${amount.toStringAsFixed(2)}',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline, color: Colors.orange),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'This is a placeholder for third-party payment gateway',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
@@ -341,14 +315,28 @@ class _PetDonationScreenState extends State<PetDonationScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepOrangeAccent,
               ),
-              child: Text(
-                'Simulate Payment Success',
-                style: TextStyle(color: Colors.white),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Proceed to Payment',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
               ),
               onPressed: () {
                 Navigator.of(context).pop();
-                // Simulate successful payment
-                _submitDonation();
+                // Navigate to PaymentPage with Billplz integration
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PaymentPage(
+                      user: widget.user,
+                      pet: widget.pet,
+                      amount: amount,
+                    ),
+                  ),
+                );
               },
             ),
           ],
